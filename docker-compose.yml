@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  # 1. Jenkins Automation Server (Accessible on Port 9090)
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: devops_jenkins
+    ports:
+      - "9090:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_data:/var/jenkins_home
+    restart: always
+
+  # 2. Nagios Network Monitoring (Accessible on Port 8081)
+  nagios:
+    image: jasonrivers/nagios:latest
+    container_name: devops_nagios
+    ports:
+      - "8081:80"
+    restart: always
+
+  # 3. Graphite Metrics Database (Accessible on Port 8085)
+  graphite:
+    image: graphiteapp/graphite-statsd:latest
+    container_name: devops_graphite
+    ports:
+      - "8085:80"
+      - "2003:2003"
+    restart: always
+
+  # 4. Grafana Visual Dashboard (Accessible on Port 3000)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: devops_grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    restart: always
+
+volumes:
+  jenkins_data:
